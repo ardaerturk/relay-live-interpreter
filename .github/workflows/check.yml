@@ -1,5 +1,14 @@
 name: Verify Relay
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      mac_runner:
+        description: Standard macOS runner for the iPhone build and simulator
+        type: choice
+        options: [macos-26, macos-26-intel]
+        default: macos-26
 permissions:
   contents: read
 jobs:
@@ -12,7 +21,7 @@ jobs:
         with: {node-version: '24'}
       - run: npm ci && npm test && npm run build
   iphone:
-    runs-on: macos-26
+    runs-on: ${{ inputs.mac_runner || 'macos-26' }}
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262

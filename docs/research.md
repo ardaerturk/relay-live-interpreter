@@ -44,6 +44,8 @@ Across the first twelve individual phrases (four phrases, three runs) the range 
 
 Verified in the in-app browser and in Chrome at desktop and phone-size viewports: initial screen, language choice, guide, invite gate, and no horizontal overflow. Production browser automation also verified invite redemption, both remote audio tracks, live captions, Stop releasing the input and output, and no runtime/console errors. Anonymous requests to start translation returned HTTP 401. Test invites were subsequently revoked. Real iPhone/AirPods behavior remains the next field test.
 
+The native WebRTC implementation was also exercised through the production broker on a Mac using the Mac Catalyst framework slice. An in-memory audio device supplied a prerecorded German train sentence (no live microphone) and measured actual audio energy on the returned track. Both English words about the Berlin train and audible translated output arrived. The native interface and audio configuration type-checked against the Apple SDK. This test does not measure Bluetooth, iPhone hardware or screen locking.
+
 ## Transport, headphones and locking
 
 - WebRTC carries the live mono microphone track directly between the browser and Azure. The browser posts an SDP offer to a short Vercel function; the function authenticates the device, obtains a translation-only ephemeral token, exchanges the SDP at Azure, and returns only the answer. The browser receives only the SDP answer; it receives no permanent Azure credentials or ephemeral tokens. Relay never records audio. Translated captions remain in memory unless the invited user explicitly saves them to account history. Azure processes the audio; Global Standard is not a promise of Sweden-only data processing.
