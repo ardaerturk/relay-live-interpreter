@@ -1,0 +1,10 @@
+.env*
+.git/
+docs/
+tests/
+node_modules/
+dist/
+.private/
+ios/
+.github/
+qa/

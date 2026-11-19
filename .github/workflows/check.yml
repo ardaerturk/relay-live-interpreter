@@ -1,0 +1,28 @@
+name: Verify Relay
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version: '24'}
+      - run: npm ci && npm test && npm run build
+  iphone:
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {persist-credentials: false}
+      - name: Build for a physical iPhone without signing
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/Relay.xcodeproj -scheme Relay -destination 'generic/platform=iOS' -derivedDataPath "$RUNNER_TEMP/Relay" CODE_SIGNING_ALLOWED=NO build | tee "$RUNNER_TEMP/iphone-build.log" | tail -80
+          test "$(/usr/libexec/PlistBuddy -c 'Print UIBackgroundModes:0' "$RUNNER_TEMP/Relay/Build/Products/Debug-iphoneos/Relay.app/Info.plist")" = audio
+      - name: Build for iPhone Simulator
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/Relay.xcodeproj -scheme Relay -destination 'generic/platform=iOS Simulator' -derivedDataPath "$RUNNER_TEMP/Relay" CODE_SIGNING_ALLOWED=NO build | tail -50

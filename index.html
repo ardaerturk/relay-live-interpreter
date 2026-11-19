@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f6f2"><meta name="robots" content="noindex,nofollow">
+  <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="/manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="/mark.svg"><link rel="apple-touch-icon" href="/icon-192.png">
+  <title>Relay · Live interpreter</title><meta name="description" content="Private live audio interpretation between German and English.">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <header><a class="brand" href="/" aria-label="Relay home"><svg viewBox="0 0 30 30" width="28" height="28" aria-hidden="true"><use href="/icons.svg#relay"/></svg>Relay</a><nav><button class="plain" id="history-open">History</button><button class="plain" id="guide-open">Guide <svg class="sm"><use href="/icons.svg#info"/></svg></button></nav></header>
+    <main>
+      <h1>Live interpreter</h1>
+      <section class="scope" aria-label="Interpreter status">
+        <div class="scope-top"><span class="status"><i id="lamp"></i><span id="status" role="status">Standby</span></span><time id="clock">00:00</time></div>
+        <svg id="wave" viewBox="0 0 560 115" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+      </section>
+      <div class="languages">
+        <label class="lang sel" for="target"><span class="label">Listen in</span><span class="value"><span id="target-label">English</span><svg class="sm"><use href="/icons.svg#down"/></svg></span>
+          <select id="target" aria-label="Listen in"><option value="en">English</option><option value="de">German</option></select>
+        </label>
+      </div>
+      <button id="main-action" class="primary"><svg><use id="action-icon" href="/icons.svg#headphones"/></svg><span id="action-text">Start listening</span></button>
+      <button id="play" class="secondary" hidden>Enable translated audio</button>
+      <p id="notice" class="notice" role="status" hidden></p>
+      <section class="captions"><div class="caption-title"><h2>Translated transcript</h2><button id="save" class="plain small" hidden>Save</button></div>
+        <p id="save-status" role="status" hidden></p><div id="caption-box" role="region" aria-label="Translated captions" tabindex="0"><p class="empty" id="placeholder">Translations will appear here.</p><p id="words" dir="auto"></p></div>
+      </section>
+    </main>
+    <footer><svg class="sm"><use href="/icons.svg#lock"/></svg> Invite only<span class="sep">/</span> Audio isn’t saved by Relay</footer>
+  </div>
+  <dialog id="guide" aria-labelledby="guide-title"><div class="modal-head"><h2 id="guide-title">Listening guide</h2><button class="close" data-close aria-label="Close guide">×</button></div>
+    <dl><dt>Listen through your AirPods</dt><dd>Connect them in Control Center before you start. For a group, place the microphone near the people speaking. If your iPhone microphone appears below, try it with AirPods as the output.</dd>
+    <dt><label for="mic">Microphone</label></dt><dd><div class="inputs"><select id="mic"><option value="">System default</option></select><button id="refresh-mics" class="plain">Find inputs</button></div><span id="mic-info" role="status">Find inputs briefly opens the mic without sending audio.</span></dd>
+    <dt>Choose what you hear</dt><dd>Pick English or German. Speech is detected automatically. If someone already speaks your listening language, you may hear only their original voice in the room. Take turns for clearer voices.</dd>
+    <dt>Listening with the screen off</dt><dd>The iPhone app supports active audio in the background. Safari may pause its microphone when the phone locks. Return here to check the status.<label class="awake"><input id="stay-awake" type="checkbox"> Keep the web display awake instead</label></dd>
+    <dt>Allow nearby voices to be sent</dt><dd>Let people know before starting. Live audio goes to Azure OpenAI. After Stop, tap Save to keep the translated words in your private History. Audio is never saved by Relay.</dd>
+    <dt>Add to your Home Screen</dt><dd>In Safari, open Share, then Add to Home Screen. Open the installed app before redeeming your device invite.</dd></dl></dialog>
+  <dialog id="history" aria-labelledby="history-heading"><div class="modal-head"><h2 id="history-heading">History</h2><button class="close" data-close aria-label="Close history">×</button></div>
+    <p id="history-message" role="status"></p><div id="history-list"><div id="saved-items"></div><button id="more-history" class="plain" hidden>Show more</button></div>
+    <div id="history-detail" hidden><button id="back-history" class="plain">← All transcripts</button><h3 id="saved-title"></h3><p id="saved-text" dir="auto"></p><button id="delete-transcript" class="plain">Delete transcript</button>
+      <div id="delete-choice" hidden><p>Delete this transcript from your account?</p><button id="keep-transcript" class="plain">Keep</button> <button id="confirm-delete" class="plain">Delete permanently</button></div>
+    </div></dialog>
+  <dialog id="access" aria-labelledby="access-title"><div class="modal-head"><h2 id="access-title">Device invite</h2><button class="close" data-close aria-label="Close invite">×</button></div>
+    <p>Open your private invite on this device, or paste it below. Each invite can be used once.</p>
+    <form id="unlock-form"><label class="field-label" for="invite">Invite link or code</label><input id="invite" required autocomplete="off" autocapitalize="none" spellcheck="false" type="password">
+    <p id="invite-error" role="alert" hidden></p><button class="primary" id="unlock">Unlock this device</button></form></dialog>
+  <audio id="output" autoplay playsinline></audio>
+  <script type="module" src="/src/main.js"></script>
+</body></html>
