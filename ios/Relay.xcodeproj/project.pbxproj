@@ -11,15 +11,28 @@
 		4900F6EF78F8F5B2F3228ECA /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = FA7887B21990D6907E0F6665 /* WebRTC */; };
 		5537BF2868592255AAF0F670 /* RelayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948EF6B3DA85FF1BA8CFC6EE /* RelayApp.swift */; };
 		83A8BA29AC759A450A261572 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 359767A5465051721E7F2076 /* Assets.xcassets */; };
+		894C7C8B8D5772A135578FB5 /* LaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFFF1F6BB740C54D02BEA14 /* LaunchTests.swift */; };
 		8C972E1D9F33398EAE9E84C0 /* RelayAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD94C0F0A719EE2FF7960C /* RelayAPI.swift */; };
 		CB255F9E8E06D1D5529353F8 /* Interpreter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFABDCC278FA7B031B940652 /* Interpreter.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		3854DACD222F441A780A22AC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00400E7BA46B4893DB3DAE46 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00CC2921912F47FC3C6615F8;
+			remoteInfo = Relay;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		359767A5465051721E7F2076 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3ECD94C0F0A719EE2FF7960C /* RelayAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayAPI.swift; sourceTree = "<group>"; };
+		78E3AAA9D17440E2BC308FC0 /* RelayUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RelayUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		79BCAB0EC3F7FA3CC2E6AB62 /* AudioCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCall.swift; sourceTree = "<group>"; };
 		948EF6B3DA85FF1BA8CFC6EE /* RelayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayApp.swift; sourceTree = "<group>"; };
+		AFFFF1F6BB740C54D02BEA14 /* LaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
 		B2640FB004F58617990C7498 /* Relay.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Relay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFABDCC278FA7B031B940652 /* Interpreter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interpreter.swift; sourceTree = "<group>"; };
 		DD6546E114339B049F0E091E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -41,14 +54,24 @@
 			isa = PBXGroup;
 			children = (
 				B2640FB004F58617990C7498 /* Relay.app */,
+				78E3AAA9D17440E2BC308FC0 /* RelayUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C52F87F100EAF9D7C65F5494 /* RelayUITests */ = {
+			isa = PBXGroup;
+			children = (
+				AFFFF1F6BB740C54D02BEA14 /* LaunchTests.swift */,
+			);
+			path = RelayUITests;
 			sourceTree = "<group>";
 		};
 		DC658091D1A7F7FB428FB8C2 = {
 			isa = PBXGroup;
 			children = (
 				E543C263B165077F89769C48 /* Relay */,
+				C52F87F100EAF9D7C65F5494 /* RelayUITests */,
 				8108792C7BDAA099F962E116 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -89,6 +112,24 @@
 			productReference = B2640FB004F58617990C7498 /* Relay.app */;
 			productType = "com.apple.product-type.application";
 		};
+		44948475B68E1616C5A4C8E7 /* RelayUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BEF0E16E0C44253F0EED586F /* Build configuration list for PBXNativeTarget "RelayUITests" */;
+			buildPhases = (
+				18859D49C3B139ACBF876672 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				78DC4C07B612F662DD462B2A /* PBXTargetDependency */,
+			);
+			name = RelayUITests;
+			packageProductDependencies = (
+			);
+			productName = RelayUITests;
+			productReference = 78E3AAA9D17440E2BC308FC0 /* RelayUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -100,6 +141,9 @@
 				TargetAttributes = {
 					00CC2921912F47FC3C6615F8 = {
 						ProvisioningStyle = Automatic;
+					};
+					44948475B68E1616C5A4C8E7 = {
+						TestTargetID = 00CC2921912F47FC3C6615F8;
 					};
 				};
 			};
@@ -121,6 +165,7 @@
 			projectRoot = "";
 			targets = (
 				00CC2921912F47FC3C6615F8 /* Relay */,
+				44948475B68E1616C5A4C8E7 /* RelayUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -137,6 +182,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		18859D49C3B139ACBF876672 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				894C7C8B8D5772A135578FB5 /* LaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC79C452CC5E84280E112945 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -149,6 +202,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		78DC4C07B612F662DD462B2A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00CC2921912F47FC3C6615F8 /* Relay */;
+			targetProxy = 3854DACD222F441A780A22AC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		2081E5984332363D157E9BAF /* Debug */ = {
@@ -291,6 +352,24 @@
 			};
 			name = Debug;
 		};
+		9BE9F6E08E841A1770F018C0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.example.RelayInterpreter.UITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Relay;
+			};
+			name = Debug;
+		};
 		F3D9B9C587F1507CA874D0DE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -312,6 +391,24 @@
 			};
 			name = Release;
 		};
+		F756963D80E62001B08E380D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.example.RelayInterpreter.UITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Relay;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -320,6 +417,15 @@
 			buildConfigurations = (
 				7CB4F2CB7DAEE9752ED1E360 /* Debug */,
 				F3D9B9C587F1507CA874D0DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BEF0E16E0C44253F0EED586F /* Build configuration list for PBXNativeTarget "RelayUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9BE9F6E08E841A1770F018C0 /* Debug */,
+				F756963D80E62001B08E380D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

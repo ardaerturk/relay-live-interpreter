@@ -12,7 +12,7 @@ jobs:
         with: {node-version: '24'}
       - run: npm ci && npm test && npm run build
   iphone:
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -20,9 +20,11 @@ jobs:
       - name: Build for a physical iPhone without signing
         run: |
           set -o pipefail
-          xcodebuild -project ios/Relay.xcodeproj -scheme Relay -destination 'generic/platform=iOS' -derivedDataPath "$RUNNER_TEMP/Relay" CODE_SIGNING_ALLOWED=NO build | tee "$RUNNER_TEMP/iphone-build.log" | tail -80
+          xcodebuild -project ios/Relay.xcodeproj -scheme Relay -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath "$RUNNER_TEMP/Relay" CODE_SIGNING_ALLOWED=NO build | tee "$RUNNER_TEMP/iphone-build.log" | tail -80
           test "$(/usr/libexec/PlistBuddy -c 'Print UIBackgroundModes:0' "$RUNNER_TEMP/Relay/Build/Products/Debug-iphoneos/Relay.app/Info.plist")" = audio
-      - name: Build for iPhone Simulator
+      - name: Launch and test the app in iPhone Simulator
         run: |
-          set -o pipefail
-          xcodebuild -project ios/Relay.xcodeproj -scheme Relay -destination 'generic/platform=iOS Simulator' -derivedDataPath "$RUNNER_TEMP/Relay" CODE_SIGNING_ALLOWED=NO build | tail -50
+          set -eo pipefail
+          xcodebuild -showdestinations -project ios/Relay.xcodeproj -scheme Relay > "$RUNNER_TEMP/destinations.txt"
+          phone=$(python3 -c 'import re,sys;s=open(sys.argv[1]).read().split("Ineligible destinations")[0];print(next(re.search(r"id:([A-Fa-f0-9-]{36})",x)[1] for x in s.splitlines() if "platform:iOS Simulator" in x and "name:iPhone" in x and re.search(r"id:[A-Fa-f0-9-]{36}",x)))' "$RUNNER_TEMP/destinations.txt")
+          xcodebuild -project ios/Relay.xcodeproj -scheme Relay -destination "platform=iOS Simulator,id=$phone" -parallel-testing-enabled NO -derivedDataPath "$RUNNER_TEMP/Relay" test | tee "$RUNNER_TEMP/simulator.log" | tail -100
