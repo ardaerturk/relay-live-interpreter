@@ -21,6 +21,7 @@ final class AudioCall: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelega
         super.init()
     }
     @MainActor func open(_ device: Device, target: String) async throws {
+        try Task.checkCancellation()
         let cfg = RTCConfiguration(); cfg.sdpSemantics = .unifiedPlan
         let constraints = RTCMediaConstraints(mandatoryConstraints:nil, optionalConstraints:nil)
         guard let p = factory.peerConnection(with:cfg, constraints:constraints, delegate:self) else {
@@ -109,8 +110,9 @@ final class AudioCall: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelega
         case "session.output_transcript.delta": if let s = obj["delta"] as? String { event(.caption(s)) }
         case "session.input_transcript.delta": if let s = obj["delta"] as? String, !s.isEmpty { event(.input) }
         case "error":
-            let type = (obj["error"] as? [String:Any])?["type"] as? String
-            if type == "invalid_request_error" || type == "authentication_error" {
+            let detail = obj["error"] as? [String:Any]
+            let type = detail?["type"] as? String, code = detail?["code"] as? String ?? ""
+            if type == "authentication_error" || ["invalid_api_key","permission_denied","insufficient_quota","model_not_found"].contains(code) {
                 event(.rejected("The interpreter rejected this session. Start a new session to try again."))
             } else { event(.ended("The translation service interrupted the stream.")) }
         case "session.closed": event(.ended("The translation service closed the stream."))

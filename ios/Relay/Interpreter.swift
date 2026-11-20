@@ -118,7 +118,7 @@ enum ListeningPhase: String {
             }
         }
         operation = Task { [weak self] in
-            guard let self else { return }
+            guard let self, !Task.isCancelled, self.session == id else { return }
             let ok = await self.permission()
             guard self.session == id else { return }
             guard ok else { self.stop("Allow microphone access in iPhone Settings to start listening."); return }
@@ -139,6 +139,7 @@ enum ListeningPhase: String {
         }
         call = audio; let lang = target
         operation = Task { [weak self] in
+            guard !Task.isCancelled, self?.attempt == id else { return }
             do { try await audio.open(device,target:lang) }
             catch {
                 guard let self, self.session == session, self.attempt == id else { return }
@@ -168,7 +169,8 @@ enum ListeningPhase: String {
         case .caption(let delta):
             guard !delta.isEmpty else { return }
             if paragraph { if !words.isEmpty { words += "\n\n" }; paragraph = false }
-            words += delta; lastCaption = Date(); health.caption(at:t)
+            words += delta; lastCaption = Date()
+            if delta.rangeOfCharacter(from:.alphanumerics) != nil { health.caption(at:t) }
         case .sample(let sample):
             pollPending = false
             if health.sample(sample,at:t) { lastAudio = Date(); budget.translated() }

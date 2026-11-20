@@ -71,3 +71,9 @@ Run the same 10–20 phrases through Relay and the existing apps on the same pho
 6. [Microsoft: Speech language support](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support) and [Live Interpreter setup](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-use-live-interpreter).
 7. [WebKit: Safari 18.4](https://webkit.org/blog/16574/webkit-features-in-safari-18-4/), [W3C: Screen Wake Lock](https://www.w3.org/TR/screen-wake-lock/) and [W3C: Media Capture and Streams](https://www.w3.org/TR/mediacapture-streams/).
 8. [Apple: membership comparison and Personal Team limits](https://developer.apple.com/support/compare-memberships/) and [AVAudioSession playAndRecord](https://developer.apple.com/documentation/avfaudio/avaudiosession/category-swift.struct/playandrecord).
+
+### Native recovery trial · November 20, 2026
+
+The old iPhone client could translate four consecutive prerecorded phrases on a healthy connection, including after a 17-second gap. That did not reproduce the exact AirPods fault. It did show why checking only the connection state was insufficient.
+
+Two subsequent runs exercised the native 1.1 coordinator, real WebRTC and the production Azure translator using a synthetic audio device on Mac Catalyst. In each run, two synthetic German voices delivered three sentences; the fixture then stopped supplying microphone frames while leaving the peer open. The first run allowed the service’s error notification through. The second withheld disconnect and error events: the microphone counter stopped advancing and Relay initiated recovery itself. Both times the next two sentences produced translated text and audible samples on the replacement stream. All five sentences remained in one savable transcript. This checks continuity, not word accuracy: in one run a blue backpack was translated as a blue shirt. It does not verify iPhone lock or Bluetooth routing on physical hardware.

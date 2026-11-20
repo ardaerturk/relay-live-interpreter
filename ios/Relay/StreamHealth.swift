@@ -18,16 +18,18 @@ struct StreamHealth {
     private(set) var inputAt: Double?, outputAt: Double?, captionAt: Double?
     private var previous: MediaSample?, sampledAt: Double?, captureAt: Double?, sentAt: Double?, playoutAt: Double?
     private var pendingInput: [Double] = [], pendingCaptions: [Double] = []
-    private var sawReceiveEnergy = false, sawPlayout = false
+    private var sawPlayout = false
     let began: Double
     init(at time: Double) { began = time }
 
     mutating func caption(at t: Double) {
         captionAt = t
+        pendingInput.removeAll()
+        // A late text delta can describe audio that has just played.
+        guard t - (outputAt ?? -.infinity) > 2 else { return }
         // Count separated intervals, not individual tokens.
         if t - (pendingCaptions.last ?? -100) >= 1 { pendingCaptions.append(t) }
         if pendingCaptions.count > 60 { pendingCaptions.removeFirst() }
-        pendingInput.removeAll()
     }
     mutating func input(at t: Double) {
         inputAt = t
@@ -42,7 +44,6 @@ struct StreamHealth {
     @discardableResult mutating func sample(_ s: MediaSample, at t: Double) -> Bool {
         let delta = max(0.01, t - (sampledAt ?? t))
         defer { previous = s; sampledAt = t }
-        sawReceiveEnergy = sawReceiveEnergy || s.outputEnergy != nil
         sawPlayout = sawPlayout || s.playoutTime != nil
         guard let p = previous else { return false }
         func advance(_ a: Double?, _ b: Double?) -> Bool { a != nil && b != nil && a! > b! }
@@ -59,7 +60,8 @@ struct StreamHealth {
     }
     func awaiting(_ t: Double) -> Bool {
         let active = pendingInput.filter { t - $0 < 32 }
-        return active.count >= 2 && t - active[0] >= 7
+        let captionWaiting = pendingCaptions.first.map { (5..<26).contains(t - $0) } ?? false
+        return captionWaiting || (active.count >= 2 && t - active[0] >= 7)
     }
     func fault(at t: Double, allowAmbiguous: Bool) -> Fault? {
         if t - (sampledAt ?? began) > 10 { return .statistics }
@@ -69,8 +71,7 @@ struct StreamHealth {
         // Transcripts without received sound, or decoded sound with a frozen device playout counter.
         if sawPlayout, let out = outputAt, t - out < 3, t - (playoutAt ?? began) > 10 { return .playback }
         let caps = pendingCaptions.filter { t - $0 < 26 }
-        if caps.count >= 2, t - caps[0] > 10, t - caps.last! < 18,
-           sawReceiveEnergy || outputAt == nil { return .playback }
+        if let first = caps.first, t - first > 11 { return .playback }
         // The model may legitimately ignore its target language. Allow just one speculative
         // recovery until there is actual translated output; quiet by itself never triggers one.
         if allowAmbiguous, speech.count >= 2, t - speech[0] >= 13 { return .untranslated }

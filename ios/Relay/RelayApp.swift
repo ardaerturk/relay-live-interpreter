@@ -18,6 +18,7 @@ struct InterpreterView: View {
     @State private var history = false
     @State private var details = false
     @State private var discardPrompt = false
+    @State private var following = true
     @ScaledMetric(relativeTo:.largeTitle) private var symbolSize = 48
     var body: some View {
         NavigationStack {
@@ -34,47 +35,66 @@ struct InterpreterView: View {
                         if !model.notice.isEmpty { Text(model.notice).foregroundStyle(.secondary) }
                     }
                 } else {
-                    ScrollView {
-                        VStack(alignment:.leading,spacing:26) {
-                            VStack(alignment:.leading,spacing:10) {
-                                HStack {
-                                    Label(model.phase.rawValue,systemImage:model.phase.symbol)
-                                        .font(.headline).foregroundStyle(statusColor)
-                                    Spacer()
-                                    if let date = model.startDate {
-                                        Text(date,style:.timer).font(.subheadline.monospacedDigit())
-                                            .foregroundStyle(.secondary).multilineTextAlignment(.trailing)
-                                    }
-                                }
-                                Text(statusDetail).font(.subheadline).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
-                            }
-                            Divider()
-                            if model.words.isEmpty {
-                                VStack(spacing:12) {
-                                    Image(systemName:"quote.opening").font(.system(size:symbolSize,weight:.regular))
-                                        .foregroundStyle(.tertiary).accessibilityHidden(true)
-                                    Text("Live transcript").font(.title2.weight(.semibold))
-                                    Text("Translated words appear here as people speak.")
-                                        .font(.body).foregroundStyle(.secondary).multilineTextAlignment(.center)
-                                }.frame(maxWidth:.infinity).padding(.vertical,36)
-                            } else {
-                                VStack(alignment:.leading,spacing:12) {
+                    ScrollViewReader { reader in
+                        ScrollView {
+                            VStack(alignment:.leading,spacing:26) {
+                                VStack(alignment:.leading,spacing:10) {
                                     HStack {
-                                        Text("Live transcript").font(.headline); Spacer()
-                                        if model.pending != nil {
-                                            Button("Save",systemImage:"square.and.arrow.down") { Task { await model.save() } }.disabled(model.busy)
+                                        Label(model.phase.rawValue,systemImage:model.phase.symbol)
+                                            .font(.headline).foregroundStyle(statusColor)
+                                        Spacer()
+                                        if let date = model.startDate {
+                                            Text(date,style:.timer).font(.subheadline.monospacedDigit())
+                                                .foregroundStyle(.secondary).multilineTextAlignment(.trailing)
                                         }
                                     }
-                                    Text(model.words).font(.title3).lineSpacing(5).textSelection(.enabled).privacySensitive()
+                                    Text(statusDetail).font(.subheadline).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
                                 }
+                                Divider()
+                                if model.words.isEmpty {
+                                    VStack(spacing:12) {
+                                        Image(systemName:"quote.opening").font(.system(size:symbolSize,weight:.regular))
+                                            .foregroundStyle(.tertiary).accessibilityHidden(true)
+                                        Text("Live transcript").font(.title2.weight(.semibold))
+                                        Text("Translated words appear here as people speak.")
+                                            .font(.body).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                                    }.frame(maxWidth:.infinity).padding(.vertical,36)
+                                } else {
+                                    VStack(alignment:.leading,spacing:12) {
+                                        HStack {
+                                            Text("Live transcript").font(.headline); Spacer()
+                                            if model.pending != nil {
+                                                Button("Save",systemImage:"square.and.arrow.down") { Task { await model.save() } }.disabled(model.busy)
+                                            }
+                                        }
+                                        Text(model.words).font(.title3).lineSpacing(5).textSelection(.enabled).privacySensitive()
+                                    }
+                                }
+                                if !model.notice.isEmpty {
+                                    Label(model.notice,systemImage:"info.circle").font(.callout).foregroundStyle(.secondary)
+                                }
+                                Color.clear.frame(height:1).id("transcript-end").accessibilityHidden(true)
+                            }.padding(.horizontal,24).padding(.vertical,12).frame(maxWidth:620)
+                            .frame(maxWidth:.infinity)
+                        }
+                        .simultaneousGesture(DragGesture(minimumDistance:12).onChanged { drag in
+                            if model.running && !model.words.isEmpty && drag.translation.height > 12 { following = false }
+                        })
+                        .onChange(of:model.words) { _, text in
+                            if following, model.running, !text.isEmpty { reader.scrollTo("transcript-end",anchor:.bottom) }
+                        }
+                        .safeAreaInset(edge:.bottom,spacing:0) {
+                            VStack(spacing:0) {
+                                if !following, model.running {
+                                    Button("Jump to live",systemImage:"arrow.down") {
+                                        following = true; reader.scrollTo("transcript-end",anchor:.bottom)
+                                    }.font(.subheadline)
+                                }
+                                controls
                             }
-                            if !model.notice.isEmpty {
-                                Label(model.notice,systemImage:"info.circle").font(.callout).foregroundStyle(.secondary)
-                            }
-                        }.padding(.horizontal,24).padding(.vertical,12).frame(maxWidth:620)
-                        .frame(maxWidth:.infinity)
+                        }
+                        .onChange(of:model.running) { _, _ in following = true }
                     }
-                    .safeAreaInset(edge:.bottom,spacing:0) { controls }
                 }
             }
             .navigationTitle("Interpreter")
@@ -113,7 +133,7 @@ struct InterpreterView: View {
         case .connecting: return "Opening the microphone and audio connection."
         case .offline: return "Translation is paused. Relay will reconnect when internet returns."
         case .recovering: return "Restoring audio. Speech during the gap may be missed."
-        case .waiting: return "Sound is coming in without a translation. Speech already in the selected language may be skipped."
+        case .waiting: return "Waiting for translated audio. Speech already in the selected language may be skipped."
         case .quiet: return "No recent speech detected on \(model.mic). Move the microphone closer to the speaker."
         case .listening: return "The microphone is open. You can lock your iPhone."
         case .hearing: return "The microphone is picking up sound."

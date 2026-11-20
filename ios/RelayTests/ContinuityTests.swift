@@ -11,7 +11,9 @@ final class ContinuityTests: XCTestCase {
         var h = StreamHealth(at:0)
         for i in 0...150 {
             let t = Double(i)
-            h.sample(frame(t),at:t)
+            var s = frame(t)
+            s.outputEnergy = (i > 3 ? 0.05 : 0) + (i > 43 ? 0.05 : 0)
+            h.sample(s,at:t)
             if i == 3 || i == 43 { h.input(at:t); h.caption(at:t) }
             XCTAssertNil(h.fault(at:t,allowAmbiguous:true))
         }
@@ -43,7 +45,7 @@ final class ContinuityTests: XCTestCase {
             var h = StreamHealth(at:0)
             for i in 0...14 {
                 let t = Double(i); var s = frame(t,output:decoded); s.playoutTime = 0
-                h.sample(s,at:t); if i == 1 || i == 4 { h.caption(at:t) }
+                h.sample(s,at:t); if i == 1 { h.caption(at:t) }
             }
             XCTAssertEqual(h.fault(at:14,allowAmbiguous:true),.playback)
         }
@@ -153,7 +155,7 @@ final class ContinuityTests: XCTestCase {
             let image = renderer.image { _ in
                 XCTAssertTrue(window.drawHierarchy(in:window.bounds,afterScreenUpdates:true))
             }
-            let file = XCTAttachment(image:image,quality:.high); file.name = "Relay " + mode; file.lifetime = .keepAlways; add(file)
+            let file = XCTAttachment(image:image); file.name = "Relay " + mode; file.lifetime = .keepAlways; add(file)
         }
     }
     @MainActor func testStopDuringPermissionAndDeadlineDuringOutageNeverReopenMic() async {
