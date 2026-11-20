@@ -22,9 +22,20 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: Relay/Info.plist
-        CURRENT_PROJECT_VERSION: 1
-        MARKETING_VERSION: 1.0
+        CURRENT_PROJECT_VERSION: 2
+        MARKETING_VERSION: 1.1
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  RelayTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [RelayTests]
+    dependencies:
+      - target: Relay
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.example.RelayInterpreter.Tests
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "5.0"
   RelayUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -42,4 +53,4 @@ schemes:
       targets:
         Relay: all
     test:
-      targets: [RelayUITests]
+      targets: [RelayTests, RelayUITests]

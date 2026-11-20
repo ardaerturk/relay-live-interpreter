@@ -6,7 +6,9 @@ import WebRTC
     @Environment(\.scenePhase) private var scene
     init() { RTCInitializeSSL() }
     var body: some Scene {
-        WindowGroup { InterpreterView(model:model).onChange(of:scene) { _, next in if next == .active { model.checkDuration() } } }
+        WindowGroup { InterpreterView(model:model).onChange(of:scene) { _, next in
+            if next == .active { model.updateRoute(); model.tick() }
+        } }
     }
 }
 
@@ -14,63 +16,163 @@ struct InterpreterView: View {
     @ObservedObject var model: Interpreter
     @State private var invite = ""
     @State private var history = false
+    @State private var details = false
     @State private var discardPrompt = false
+    @ScaledMetric(relativeTo:.largeTitle) private var symbolSize = 48
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment:.leading,spacing:22) {
-                    if model.device == nil {
-                        Image(systemName:"headphones").font(.largeTitle).accessibilityHidden(true)
-                        Text("Device invite").font(.title2.bold())
-                        Text("Paste the private link for this iPhone.").foregroundStyle(.secondary)
-                        SecureField("Invite link",text:$invite).keyboardType(.URL).textInputAutocapitalization(.never)
-                            .autocorrectionDisabled().textFieldStyle(.roundedBorder).privacySensitive()
-                        Button("Unlock this device") { Task { await model.unlock(invite); if model.device != nil { invite = "" } } }
-                            .buttonStyle(.borderedProminent).disabled(model.busy || invite.isEmpty)
-                    } else {
-                        HStack {
-                            Label(model.phase,systemImage:model.running ? "waveform" : "circle").font(.headline)
-                            Spacer()
-                            if let date = model.startDate { Text(date,style:.timer).monospacedDigit().multilineTextAlignment(.trailing) }
-                        }
-                        VStack(alignment:.leading, spacing:8) {
-                            Text("Listen in").font(.subheadline).foregroundStyle(.secondary)
-                            Picker("Listen in",selection:$model.target) { Text("English").tag("en"); Text("German").tag("de") }
-                                .pickerStyle(.segmented).disabled(model.running || model.busy)
-                        }
-                        Button {
-                            if model.running { model.stop() } else if model.pending != nil { discardPrompt = true } else { model.start() }
-                        } label: {
-                            Label(model.phase == "Connecting" ? "Cancel" : model.running ? "Stop listening" : "Start listening",
-                                  systemImage:model.running ? "stop.fill" : "headphones")
-                                .font(.headline).frame(maxWidth:.infinity).padding(.vertical,7)
-                        }.buttonStyle(.borderedProminent).disabled(model.busy)
-                        Divider()
-                        HStack {
-                            Text("Translated transcript").font(.headline)
-                            Spacer()
-                            if model.pending != nil { Button("Save") { Task { await model.save() } }.disabled(model.busy) }
-                        }
-                        if model.words.isEmpty { Text("Translations will appear here.").foregroundStyle(.secondary) }
-                        else { Text(model.words).textSelection(.enabled).privacySensitive() }
-                        if !model.running && model.words.isEmpty {
-                            Text("Connect your AirPods and start listening before locking your phone.").font(.footnote).foregroundStyle(.secondary)
+            Group {
+                if model.device == nil {
+                    Form {
+                        Section {
+                            SecureField("Invite link",text:$invite).keyboardType(.URL).textInputAutocapitalization(.never)
+                                .autocorrectionDisabled().privacySensitive()
+                            Button("Unlock this device") { Task { await model.unlock(invite); if model.device != nil { invite = "" } } }
+                                .disabled(model.busy || invite.isEmpty)
+                        } header: { Label("Device invite",systemImage:"envelope") }
+                        footer: { Text("Paste the private invitation for this iPhone.") }
+                        if !model.notice.isEmpty { Text(model.notice).foregroundStyle(.secondary) }
+                    }
+                } else {
+                    ScrollView {
+                        VStack(alignment:.leading,spacing:26) {
+                            VStack(alignment:.leading,spacing:10) {
+                                HStack {
+                                    Label(model.phase.rawValue,systemImage:model.phase.symbol)
+                                        .font(.headline).foregroundStyle(statusColor)
+                                    Spacer()
+                                    if let date = model.startDate {
+                                        Text(date,style:.timer).font(.subheadline.monospacedDigit())
+                                            .foregroundStyle(.secondary).multilineTextAlignment(.trailing)
+                                    }
+                                }
+                                Text(statusDetail).font(.subheadline).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
+                            }
+                            Divider()
+                            if model.words.isEmpty {
+                                VStack(spacing:12) {
+                                    Image(systemName:"quote.opening").font(.system(size:symbolSize,weight:.regular))
+                                        .foregroundStyle(.tertiary).accessibilityHidden(true)
+                                    Text("Live transcript").font(.title2.weight(.semibold))
+                                    Text("Translated words appear here as people speak.")
+                                        .font(.body).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                                }.frame(maxWidth:.infinity).padding(.vertical,36)
+                            } else {
+                                VStack(alignment:.leading,spacing:12) {
+                                    HStack {
+                                        Text("Live transcript").font(.headline); Spacer()
+                                        if model.pending != nil {
+                                            Button("Save",systemImage:"square.and.arrow.down") { Task { await model.save() } }.disabled(model.busy)
+                                        }
+                                    }
+                                    Text(model.words).font(.title3).lineSpacing(5).textSelection(.enabled).privacySensitive()
+                                }
+                            }
+                            if !model.notice.isEmpty {
+                                Label(model.notice,systemImage:"info.circle").font(.callout).foregroundStyle(.secondary)
+                            }
+                        }.padding(.horizontal,24).padding(.vertical,12).frame(maxWidth:620)
+                        .frame(maxWidth:.infinity)
+                    }
+                    .safeAreaInset(edge:.bottom,spacing:0) { controls }
+                }
+            }
+            .navigationTitle("Interpreter")
+            .toolbar {
+                if model.device != nil {
+                    ToolbarItem(placement:.topBarTrailing) { Button("History",systemImage:"clock.arrow.circlepath") { history = true } }
+                    ToolbarItem(placement:.topBarTrailing) {
+                        Menu("Session options",systemImage:"ellipsis") {
+                            Button("Audio details",systemImage:"waveform") { model.updateRoute(); details = true }
+                            if model.running { Button("Reconnect audio",systemImage:"arrow.clockwise") { model.reconnect() }.disabled(!model.canReconnect) }
                         }
                     }
-                    if !model.notice.isEmpty { Text(model.notice).font(.callout).foregroundStyle(.secondary) }
-                }.frame(maxWidth:600,alignment:.leading).padding()
+                }
             }
-            .navigationTitle("Live interpreter")
-            .toolbar { if let d = model.device {
-                ToolbarItem(placement:.topBarTrailing) { Button("History") { history = true }
-                    .sheet(isPresented:$history) { HistoryView(device:d, onUnauthorized:{ error in history = false; model.handle(error) }) } }
+            .sheet(isPresented:$history) { if let d = model.device {
+                HistoryView(device:d,onUnauthorized:{ history = false; model.handle($0) })
             } }
-        }
-        .confirmationDialog("Start without saving this transcript?",isPresented:$discardPrompt,titleVisibility:.visible) {
-            Button("Start new session",role:.destructive) { model.start() }
-            Button("Cancel",role:.cancel) {}
+            .sheet(isPresented:$details) { AudioDetails(model:model).presentationDetents([.medium,.large]) }
+            .confirmationDialog("Start without saving this transcript?",isPresented:$discardPrompt,titleVisibility:.visible) {
+                Button("Start new session",role:.destructive) { model.start() }
+                Button("Cancel",role:.cancel) {}
+            }
         }
     }
+    private var statusColor: Color {
+        switch model.phase {
+        case .recovering,.offline,.waiting: return .orange
+        case .listening,.hearing,.translating: return .accentColor
+        default: return .primary
+        }
+    }
+    private var statusDetail: String {
+        switch model.phase {
+        case .idle: return "Choose what you want to hear."
+        case .permission: return "Checking microphone access on this iPhone."
+        case .connecting: return "Opening the microphone and audio connection."
+        case .offline: return "Translation is paused. Relay will reconnect when internet returns."
+        case .recovering: return "Restoring audio. Speech during the gap may be missed."
+        case .waiting: return "Sound is coming in without a translation. Speech already in the selected language may be skipped."
+        case .quiet: return "No recent speech detected on \(model.mic). Move the microphone closer to the speaker."
+        case .listening: return "The microphone is open. You can lock your iPhone."
+        case .hearing: return "The microphone is picking up sound."
+        case .translating: return "Receiving translated audio."
+        }
+    }
+    private var controls: some View {
+        VStack(spacing:14) {
+            HStack {
+                Text("Listen in").font(.subheadline).foregroundStyle(.secondary)
+                Spacer()
+                Picker("Listen in",selection:$model.target) { Text("English").tag("en"); Text("German").tag("de") }
+                    .pickerStyle(.segmented).frame(maxWidth:230).disabled(model.running || model.busy)
+            }
+            if #available(iOS 26, *) {
+                action.buttonStyle(.glassProminent)
+            } else {
+                action.buttonStyle(.borderedProminent)
+            }
+        }
+        .padding(.horizontal,24).padding(.vertical,12).frame(maxWidth:620).frame(maxWidth:.infinity)
+        .background(.background)
+    }
+    private var action: some View {
+        Button {
+            if model.running { model.stop() } else if model.pending != nil { discardPrompt = true } else { model.start() }
+        } label: {
+            Label(model.running ? "Stop listening" : "Start listening",systemImage:model.running ? "stop.fill" : "mic.fill")
+                .font(.headline).frame(maxWidth:.infinity).padding(.vertical,3)
+        }.controlSize(.large).tint(model.running ? .red : .accentColor).disabled(model.busy && !model.running)
+    }
+}
+
+private struct AudioDetails: View {
+    @ObservedObject var model: Interpreter
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            List {
+                Section("Audio route") {
+                    LabeledContent("Microphone",value:model.mic)
+                    LabeledContent("Output",value:model.headphones)
+                    LabeledContent("Volume",value:"\(model.volume)%")
+                }
+                Section("This session") {
+                    LabeledContent("Speech detected",value:time(model.lastSpeech))
+                    LabeledContent("Translated audio received",value:time(model.lastAudio))
+                    LabeledContent("Transcript updated",value:time(model.lastCaption))
+                    LabeledContent("Reconnect attempts",value:String(model.recoveries))
+                    if !model.reason.isEmpty { Text(model.reason).foregroundStyle(.secondary) }
+                }
+                Section {
+                    LabeledContent("Relay version",value:Bundle.main.object(forInfoDictionaryKey:"CFBundleShortVersionString") as? String ?? "—")
+                }
+            }.navigationTitle("Audio details").navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement:.confirmationAction) { Button("Done") { dismiss() } } }
+        }
+    }
+    private func time(_ d: Date?) -> String { d?.formatted(date:.omitted,time:.standard) ?? "—" }
 }
 
 struct HistoryView: View {

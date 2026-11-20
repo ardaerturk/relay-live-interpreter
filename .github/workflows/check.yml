@@ -36,4 +36,11 @@ jobs:
           set -eo pipefail
           xcodebuild -showdestinations -project ios/Relay.xcodeproj -scheme Relay > "$RUNNER_TEMP/destinations.txt"
           phone=$(python3 -c 'import re,sys;s=open(sys.argv[1]).read().split("Ineligible destinations")[0];print(next(re.search(r"id:([A-Fa-f0-9-]{36})",x)[1] for x in s.splitlines() if "platform:iOS Simulator" in x and "name:iPhone" in x and re.search(r"id:[A-Fa-f0-9-]{36}",x)))' "$RUNNER_TEMP/destinations.txt")
-          xcodebuild -project ios/Relay.xcodeproj -scheme Relay -destination "platform=iOS Simulator,id=$phone" -parallel-testing-enabled NO -derivedDataPath "$RUNNER_TEMP/Relay" test | tee "$RUNNER_TEMP/simulator.log" | tail -100
+          xcodebuild -project ios/Relay.xcodeproj -scheme Relay -destination "platform=iOS Simulator,id=$phone" -parallel-testing-enabled NO -derivedDataPath "$RUNNER_TEMP/Relay" -resultBundlePath "$RUNNER_TEMP/RelayTests.xcresult" test | tee "$RUNNER_TEMP/simulator.log" | tail -100
+      - name: Export native appearance checks
+        run: xcrun xcresulttool export attachments --test-id 'ContinuityTests/testNativeSessionAppearance()' --path "$RUNNER_TEMP/RelayTests.xcresult" --output-path "$RUNNER_TEMP/RelayAppearance"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-appearance
+          path: ${{ runner.temp }}/RelayAppearance
+          retention-days: 7

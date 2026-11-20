@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		0C0D8AF2A29CE7F86A2A9C9F /* AudioCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BCAB0EC3F7FA3CC2E6AB62 /* AudioCall.swift */; };
+		3A0A30BAE47902298DDF2C1F /* ContinuityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC9133CC4793A48F06F9A9C /* ContinuityTests.swift */; };
 		4900F6EF78F8F5B2F3228ECA /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = FA7887B21990D6907E0F6665 /* WebRTC */; };
 		5537BF2868592255AAF0F670 /* RelayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948EF6B3DA85FF1BA8CFC6EE /* RelayApp.swift */; };
 		83A8BA29AC759A450A261572 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 359767A5465051721E7F2076 /* Assets.xcassets */; };
 		894C7C8B8D5772A135578FB5 /* LaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFFF1F6BB740C54D02BEA14 /* LaunchTests.swift */; };
 		8C972E1D9F33398EAE9E84C0 /* RelayAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD94C0F0A719EE2FF7960C /* RelayAPI.swift */; };
 		CB255F9E8E06D1D5529353F8 /* Interpreter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFABDCC278FA7B031B940652 /* Interpreter.swift */; };
+		FC05648B9BF9B17C265A2EBB /* StreamHealth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325FD82D9047E061AEE98367 /* StreamHealth.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,16 +26,26 @@
 			remoteGlobalIDString = 00CC2921912F47FC3C6615F8;
 			remoteInfo = Relay;
 		};
+		56659E1809A0C78F49479215 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00400E7BA46B4893DB3DAE46 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00CC2921912F47FC3C6615F8;
+			remoteInfo = Relay;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		325FD82D9047E061AEE98367 /* StreamHealth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamHealth.swift; sourceTree = "<group>"; };
 		359767A5465051721E7F2076 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3ECD94C0F0A719EE2FF7960C /* RelayAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayAPI.swift; sourceTree = "<group>"; };
+		3FC9133CC4793A48F06F9A9C /* ContinuityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuityTests.swift; sourceTree = "<group>"; };
 		78E3AAA9D17440E2BC308FC0 /* RelayUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RelayUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		79BCAB0EC3F7FA3CC2E6AB62 /* AudioCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCall.swift; sourceTree = "<group>"; };
 		948EF6B3DA85FF1BA8CFC6EE /* RelayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayApp.swift; sourceTree = "<group>"; };
 		AFFFF1F6BB740C54D02BEA14 /* LaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
 		B2640FB004F58617990C7498 /* Relay.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Relay.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BABB516AF90FA95A49A1731E /* RelayTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RelayTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFABDCC278FA7B031B940652 /* Interpreter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interpreter.swift; sourceTree = "<group>"; };
 		DD6546E114339B049F0E091E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -54,6 +66,7 @@
 			isa = PBXGroup;
 			children = (
 				B2640FB004F58617990C7498 /* Relay.app */,
+				BABB516AF90FA95A49A1731E /* RelayTests.xctest */,
 				78E3AAA9D17440E2BC308FC0 /* RelayUITests.xctest */,
 			);
 			name = Products;
@@ -71,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				E543C263B165077F89769C48 /* Relay */,
+				E9C14B8A9590FCA3EDCFEAEA /* RelayTests */,
 				C52F87F100EAF9D7C65F5494 /* RelayUITests */,
 				8108792C7BDAA099F962E116 /* Products */,
 			);
@@ -85,8 +99,17 @@
 				CFABDCC278FA7B031B940652 /* Interpreter.swift */,
 				3ECD94C0F0A719EE2FF7960C /* RelayAPI.swift */,
 				948EF6B3DA85FF1BA8CFC6EE /* RelayApp.swift */,
+				325FD82D9047E061AEE98367 /* StreamHealth.swift */,
 			);
 			path = Relay;
+			sourceTree = "<group>";
+		};
+		E9C14B8A9590FCA3EDCFEAEA /* RelayTests */ = {
+			isa = PBXGroup;
+			children = (
+				3FC9133CC4793A48F06F9A9C /* ContinuityTests.swift */,
+			);
+			path = RelayTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -111,6 +134,24 @@
 			productName = Relay;
 			productReference = B2640FB004F58617990C7498 /* Relay.app */;
 			productType = "com.apple.product-type.application";
+		};
+		22D63D7F51BA7ACCC91FF884 /* RelayTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E227B8FDC7CB304FEE66DF90 /* Build configuration list for PBXNativeTarget "RelayTests" */;
+			buildPhases = (
+				A5E928E34BD5CECB56D64538 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B789F58BB61B880D7F193A2B /* PBXTargetDependency */,
+			);
+			name = RelayTests;
+			packageProductDependencies = (
+			);
+			productName = RelayTests;
+			productReference = BABB516AF90FA95A49A1731E /* RelayTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		44948475B68E1616C5A4C8E7 /* RelayUITests */ = {
 			isa = PBXNativeTarget;
@@ -165,6 +206,7 @@
 			projectRoot = "";
 			targets = (
 				00CC2921912F47FC3C6615F8 /* Relay */,
+				22D63D7F51BA7ACCC91FF884 /* RelayTests */,
 				44948475B68E1616C5A4C8E7 /* RelayUITests */,
 			);
 		};
@@ -190,6 +232,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A5E928E34BD5CECB56D64538 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A0A30BAE47902298DDF2C1F /* ContinuityTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC79C452CC5E84280E112945 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -198,6 +248,7 @@
 				CB255F9E8E06D1D5529353F8 /* Interpreter.swift in Sources */,
 				8C972E1D9F33398EAE9E84C0 /* RelayAPI.swift in Sources */,
 				5537BF2868592255AAF0F670 /* RelayApp.swift in Sources */,
+				FC05648B9BF9B17C265A2EBB /* StreamHealth.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,6 +259,11 @@
 			isa = PBXTargetDependency;
 			target = 00CC2921912F47FC3C6615F8 /* Relay */;
 			targetProxy = 3854DACD222F441A780A22AC /* PBXContainerItemProxy */;
+		};
+		B789F58BB61B880D7F193A2B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00CC2921912F47FC3C6615F8 /* Relay */;
+			targetProxy = 56659E1809A0C78F49479215 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -275,6 +331,24 @@
 			};
 			name = Debug;
 		};
+		52BA97836630D2E50EFB51DA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.example.RelayInterpreter.Tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Relay.app/Relay";
+			};
+			name = Debug;
+		};
 		71F4EFF4B9550541A79E6FCC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -337,14 +411,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Relay/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = org.example.RelayInterpreter;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
@@ -370,20 +444,38 @@
 			};
 			name = Debug;
 		};
+		B64C6B120C8B6607431DB5A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.example.RelayInterpreter.Tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Relay.app/Relay";
+			};
+			name = Release;
+		};
 		F3D9B9C587F1507CA874D0DE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Relay/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = org.example.RelayInterpreter;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
@@ -435,6 +527,15 @@
 			buildConfigurations = (
 				2081E5984332363D157E9BAF /* Debug */,
 				71F4EFF4B9550541A79E6FCC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E227B8FDC7CB304FEE66DF90 /* Build configuration list for PBXNativeTarget "RelayTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				52BA97836630D2E50EFB51DA /* Debug */,
+				B64C6B120C8B6607431DB5A2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
